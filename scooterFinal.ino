@@ -3,10 +3,10 @@
 #define JS_X A0 //analog joystick pins
 #define JS_Y A1
 //Motor pin defines
-#define MRB 6 //Motor right
-#define MRA 9
-#define MLA 10 //Motor left
-#define MLB 11
+#define AN1 6 //Analog input for motor left
+#define AN2 9 //Analog input for motor right
+#define IN1 10 //Direction for motor left
+#define IN2 11 //Direction for motor right
 
 #define NEOPIXEL_PIN 2 //Neopixel data pin
 #define LED_NUM 60 //How many LEDs in the strip? It's 60 LEDs per meter, so just change this based on how many meters you bought
@@ -96,10 +96,15 @@ void initPins(){
     pinMode(echoPins[i],INPUT);
   }
   //Set motor pins to output
-  pinMode(MRA,OUTPUT);
-  pinMode(MRB,OUTPUT);
-  pinMode(MLA,OUTPUT);
-  pinMode(MLB,OUTPUT);
+  pinMode(AN1,OUTPUT);
+  pinMode(AN2,OUTPUT);
+  pinMode(IN1,OUTPUT);
+  pinMode(IN2,OUTPUT);
+  analogWrite(AN1,0);
+  analogWrite(AN2,0);
+  digitalWrite(IN1,0);
+  digitalWrite(IN2,0);
+  delay(2000); //Wait for motor driver to boot up
 }
 
 void updateMotors(){
@@ -123,20 +128,20 @@ void updateMotors(){
 void setMotors(int rightVal, int leftVal){
   //Works like a tank drive system
   if(rightVal<0){ //Backwards
-    analogWrite(MRA,0);
-    analogWrite(MRB,abs(rightVal));
+    digitalWrite(IN2,1); //Motor counter-clockwise
+    analogWrite(AN2,abs(rightVal));
   }
   else{
-    analogWrite(MRA,rightVal);
-    analogWrite(MRB,0);
+    digitalWrite(IN2,0); //Motor clockwise
+    analogWrite(AN2,rightVal);
   }
   if(leftVal<0){ //Backwards
-    analogWrite(MLB,abs(leftVal));
-    analogWrite(MLA,0);
+    analogWrite(AN1,abs(leftVal));
+    digitalWrite(IN1,1);
   }
   else{
-    analogWrite(MLA,leftVal);
-    analogWrite(MLB,0);
+    analogWrite(AN1,leftVal);
+    digitalWrite(IN1,0);
   }
 }
 
